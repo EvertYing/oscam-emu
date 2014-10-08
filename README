@@ -1,21 +1,29 @@
 OSCam-emu: Open Source Conditional Access Module Emulator
 =========================================================
 
-
 OSCam-emu is an Oscam addon module to include emulator support and other functionality that collides with the goal of the original oscam developers.
 
-This patch creates functional emulator support on a client base so keys can't be reshared over the net, if you want a "shareable" EMU use OSEmu instead and add it as a reader to your plain oscam server.
-OSEmu can be found at https://github.com/oscam-emu/OSEmu
+This patch creates a virtual card reader which is configured automatically.
+You may save the default reader configuration with the webif and then modify it to your own liking.
 
+Key file ("SoftCam.Key"):
+OSCam-emu does not require, but will make use of "SoftCam.Key" if available.
+"SoftCam.Key" is searched in the oscam config folder (where oscam.conf is located) and also in "/var/keys".
+
+You may use OSEmu instead and add it as a reader to your plain oscam server.
+OSEmu can be found at https://github.com/oscam-emu/OSEmu
 
 Supported systems
 =================
 
 Currently only the following crypto systems are available:
  - Cryptoworks
- - NDS (proof off concept)
- - Viaaccess-2.3 (proof off concept)
-All of these are basicly working but far from complete so anyone filling in blanks is welcome...
+ - SoftNDS
+ - Viaccess 1/2/3
+ - Nagra 2
+ - Irdeto 2
+ 
+All of these are basically working, but far from complete so anyone filling in blanks is welcome...
 
 
 TODO
@@ -23,8 +31,6 @@ TODO
 
 Work has to be done on the following items:
  - Add other encryption systems
- - Add keyfile support
- - More keys
 
 
 Version history
@@ -35,21 +41,35 @@ OSCam-emu history is accessible through GitHub commits at:
 
 
 Building OSCam-emu from source
-==========================
+==============================
 
  - Get the lastest oscam sources from SVN:
     svn checkout http://www.streamboard.tv/svn/oscam/trunk oscam-svn
 
- - save the oscam-emu.patch file
+ - Save the oscam-emu.patch file
+    wget https://github.com/oscam-emu/oscam-emu/raw/master/oscam-emu.patch
 
  - Go to oscam-svn directory.
 
  - Patch the source with the EMU patch:
-    patch -p1 < ../oscam-emu.patch
-
- - Run `./config.sh -g` to choose the features you want. (make sure to include at least all readers, constcw and emu support besides the wanted protocols)
+    patch -p0 < ../oscam-emu.patch
+    
+ - OR: Instead of 'patch', you may also use 'svn patch':
+    svn patch ../oscam-emu.patch
+    
+ - Put a SoftCam.Key file into the oscam-svn directory (for example from skystar.org)
+   Note: This does not apply for Mac OSX, SoftCam.Key cannot be integrated on this system at the moment.
+  
+ - Run `./config.sh -g` to choose the features you want.
 
  - Run `make` to compile OSCam.
+
+
+OSCam dvbapi config
+===================
+
+If dvbapi is activated, the "delayer" option is forced to have a value of at least 70.
+This is to avoid freezes/crashes because of too fast ecm responses.
 
 
 Help and Support
@@ -59,6 +79,6 @@ You may visit our issues system for filling in bug reports regarding EMU issues.
    https://github.com/oscam-emu/oscam-emu/issues
 
 Configuration wiki:
-   http://www.streamboard.tv/wiki/index.php/OSCam/
+   http://www.streamboard.tv/wiki/index.php/OSCam
 
-Configuring the EMU part is easy, there is none, currently all keys are inside the source…
+
